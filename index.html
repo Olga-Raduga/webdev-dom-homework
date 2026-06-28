@@ -41,34 +41,49 @@
   const addButton = document.querySelector('.add-form-button');
   const nameInput = document.querySelector('.add-form-name');
   const commentInput = document.querySelector('.add-form-text');
+  function escapeHtml(text) {
+    return text
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#039;');
+  }
   function renderComments() {
     commentsList.innerHTML = comments.map(function (comment, index) {
       return `
-          <li class="comment">
-            <div class="comment-header">
-              <div>${comment.name}</div>
-              <div>${comment.date}</div>
+        <li class="comment" data-index="${index}">
+          <div class="comment-header">
+            <div>${escapeHtml(comment.name)}</div>
+            <div>${comment.date}</div>
+          </div>
+          <div class="comment-body">
+            <div class="comment-text">${escapeHtml(comment.text)}</div>
+          </div>
+          <div class="comment-footer">
+            <div class="likes">
+              <span class="likes-counter">${comment.likesCount}</span>
+              <button class="like-button ${comment.isLiked ? '-active-like' : ''}" data-index="${index}"></button>
             </div>
-            <div class="comment-body">
-              <div class="comment-text">${comment.text}</div>
-            </div>
-            <div class="comment-footer">
-              <div class="likes">
-                <span class="likes-counter">${comment.likesCount}</span>
-                <button class="like-button ${comment.isLiked ? '-active-like' : ''}" data-index="${index}"></button>
-              </div>
-            </div>
-          </li>
-        `;
+          </div>
+        </li>
+      `;
     }).join('');
   }
   commentsList.addEventListener('click', function (event) {
     const likeButton = event.target.closest('.like-button');
-    if (!likeButton) return;
-    const index = Number(likeButton.dataset.index);
-    comments[index].isLiked = !comments[index].isLiked;
-    comments[index].likesCount += comments[index].isLiked ? 1 : -1;
-    renderComments();
+    if (likeButton) {
+      const index = Number(likeButton.dataset.index);
+      comments[index].isLiked = !comments[index].isLiked;
+      comments[index].likesCount += comments[index].isLiked ? 1 : -1;
+      renderComments();
+      return;
+    }
+    const commentCard = event.target.closest('.comment');
+    if (commentCard) {
+      const index = Number(commentCard.dataset.index);
+      commentInput.value = '> ' + comments[index].text;
+    }
   });
   addButton.addEventListener('click', function () {
     const name = nameInput.value.trim();
