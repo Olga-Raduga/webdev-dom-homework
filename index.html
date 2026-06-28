@@ -82,7 +82,6 @@
     const commentCard = event.target.closest('.comment');
     if (commentCard) {
       const index = Number(commentCard.dataset.index);
-      nameInput.value = comments[index].name;
       commentInput.value = '> ' + comments[index].text;
     }
   });
