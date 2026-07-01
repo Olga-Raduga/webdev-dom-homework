@@ -5,8 +5,15 @@ const commentsList = document.querySelector(".comments");
 const addButton = document.querySelector(".add-form-button");
 const nameInput = document.querySelector(".add-form-name");
 const commentInput = document.querySelector(".add-form-text");
-getComments().then((comments) => {
-    renderComments(comments, commentsList);
+const addForm = document.querySelector(".add-form");
+function loadComments() {
+    commentsList.innerHTML = "<li class='loading'>Комментарии загружаются...</li>";
+    return getComments().then((comments) => {
+        renderComments(comments, commentsList);
+        return comments;
+    });
+}
+loadComments().then((comments) => {
     setupLikes(comments, commentsList, commentInput, renderComments);
-    setupAddComment(comments, commentsList, addButton, nameInput, commentInput, renderComments);
+    setupAddComment(comments, commentsList, addButton, nameInput, commentInput, addForm, renderComments);
 });
