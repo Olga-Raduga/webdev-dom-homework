@@ -1,10 +1,11 @@
+import { addComment, getComments } from "./api.js";
 export function setupLikes(comments, commentsList, commentInput, renderComments) {
     commentsList.addEventListener("click", function (event) {
         const likeButton = event.target.closest(".like-button");
         if (likeButton) {
             const index = Number(likeButton.dataset.index);
             comments[index].isLiked = !comments[index].isLiked;
-            comments[index].likesCount += comments[index].isLiked ? 1 : -1;
+            comments[index].likes += comments[index].isLiked ? 1 : -1;
             renderComments(comments, commentsList);
             return;
         }
@@ -21,21 +22,15 @@ export function setupAddComment(comments, commentsList, addButton, nameInput, co
         const comment = commentInput.value.trim();
         if (name === "") { alert("Введите имя"); return; }
         if (comment === "") { alert("Введите комментарий"); return; }
-        const now = new Date();
-        const day = String(now.getDate()).padStart(2, "0");
-        const month = String(now.getMonth() + 1).padStart(2, "0");
-        const year = String(now.getFullYear()).slice(2);
-        const hours = String(now.getHours()).padStart(2, "0");
-        const minutes = String(now.getMinutes()).padStart(2, "0");
-        comments.push({
-            name,
-            date: `${day}.${month}.${year} ${hours}:${minutes}`,
-            text: comment,
-            likesCount: 0,
-            isLiked: false,
-        });
-        renderComments(comments, commentsList);
-        nameInput.value = "";
-        commentInput.value = "";
+        addComment(name, comment)
+            .then(() => getComments())
+            .then((newComments) => {
+                comments.length = 0;
+                newComments.forEach((c) => comments.push(c));
+                renderComments(comments, commentsList);
+                nameInput.value = "";
+                commentInput.value = "";
+            })
+            .catch((error) => alert(error.message));
     });
 }
