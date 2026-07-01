@@ -135,3 +135,16 @@ body {
   .add-form-button:hover {
     opacity: 0.9;
   }
+  @keyframes heartbeat {
+  0%   { transform: scale(1); }
+  20%  { transform: scale(1.4); }
+  40%  { transform: scale(1); }
+  60%  { transform: scale(1.2); }
+  80%  { transform: scale(1); }
+  100% { transform: scale(1); }
+}
+.-loading-like {
+  animation: heartbeat 0.8s ease infinite;
+  opacity: 0.5;
+  pointer-events: none;
+}
