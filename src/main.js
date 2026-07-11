@@ -11,9 +11,17 @@ function loadComments() {
     return getComments().then((comments) => {
         renderComments(comments, commentsList);
         return comments;
-    });
+    })
+        .catch((error) => {
+            if (error.message === "Ошибка сервера") {
+                alert("Сервер сломался, попробуй позже");
+            } else {
+                alert("Кажется, у вас сломался интернет, попробуйте позже");
+            }
+        });
 }
 loadComments().then((comments) => {
+    if (!comments) return;
     setupLikes(comments, commentsList, commentInput, renderComments);
     setupAddComment(comments, commentsList, addButton, nameInput, commentInput, addForm, renderComments);
 });
