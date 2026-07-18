@@ -1,4 +1,4 @@
-import { getComments, addComment, login } from "./api.js";
+import { getComments, addComment, login, register } from "./api.js";
 import { renderComments } from "./renderComments.js";
 
 const commentsList = document.querySelector(".comments");
@@ -12,11 +12,17 @@ function renderLoginPage() {
     addForm.innerHTML = `
         <p>Чтобы добавить комментарий, 
             <a href="#" id="login-link">авторизуйтесь</a>
+            или
+            <a href="#" id="register-link">зарегистрируйтесь</a>
         </p>
     `;
     document.getElementById("login-link").addEventListener("click", function (e) {
         e.preventDefault();
         renderAuthForm();
+    });
+    document.getElementById("register-link").addEventListener("click", function (e) {
+        e.preventDefault();
+        renderRegisterForm();
     });
 }
 //форма входа
@@ -34,10 +40,46 @@ function renderAuthForm() {
             .then((data) => {
                 userToken = data.user.token;
                 userName = data.user.name;
+                //сохраняю в браузере
+                localStorage.setItem('token', userToken);
+                localStorage.setItem('name', userName);
                 renderAddForm();
             })
             .catch(() => {
                 document.getElementById("login-error").style.display = "block";
+            });
+    });
+}
+//форма регистрации
+function renderRegisterForm() {
+    addForm.innerHTML = `
+        <input type="text" id="reg-name" placeholder="Ваше имя" />
+        <input type="text" id="reg-login" placeholder="Логин" />
+        <input type="password" id="reg-password" placeholder="Пароль" />
+        <button id="reg-button">Зарегистрироваться</button>
+        <p><a href="#" id="back-to-login">Уже есть аккаунт? Войти</a></p>
+        <p id="reg-error" style="color:red; display:none;"></p>
+    `;
+    document.getElementById("back-to-login").addEventListener("click", function (e) {
+        e.preventDefault();
+        renderAuthForm();
+    });
+    document.getElementById("reg-button").addEventListener("click", function () {
+        const name = document.getElementById("reg-name").value;
+        const loginValue = document.getElementById("reg-login").value;
+        const password = document.getElementById("reg-password").value;
+        register(loginValue, password, name)
+            .then((data) => {
+                userToken = data.user.token;
+                userName = data.user.name;
+                localStorage.setItem('token', userToken);
+                localStorage.setItem('name', userName);
+                renderAddForm();
+            })
+            .catch((error) => {
+                const errorEl = document.getElementById("reg-error");
+                errorEl.textContent = error.message;
+                errorEl.style.display = "block";
             });
     });
 }
@@ -77,11 +119,22 @@ function renderAddForm() {
 }
 //запуск
 function init() {
+    //проверяю при старте
+    const savedToken = localStorage.getItem('token');
+    const savedName = localStorage.getItem('name');
+    if (savedToken) {
+        userToken = savedToken;
+        userName = savedName;
+    }
     commentsList.innerHTML = "<li class='loading'>Комментарии загружаются...</li>";
     getComments()
         .then((comments) => {
             renderComments(comments, commentsList);
-            renderLoginPage();
+            if (userToken) {
+                renderAddForm();
+            } else {
+                renderLoginPage();
+            }
         })
         .catch((error) => {
             if (error.message === "Ошибка сервера") {
