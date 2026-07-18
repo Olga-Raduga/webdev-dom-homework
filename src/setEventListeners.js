@@ -36,11 +36,16 @@ export function setupAddComment(comments, commentsList, addButton, nameInput, co
     addingText.textContent = "Комментарий добавляется...";
     addingText.style.display = "none";
     addForm.after(addingText);
-    addButton.addEventListener("click", function () {
+
+    function handleAddClick() {
         const name = nameInput.value.trim();
         const comment = commentInput.value.trim();
-        if (name === "") { alert("Введите имя"); return; }
-        if (comment === "") { alert("Введите комментарий"); return; }
+
+        if (name.length < 3 || comment.length < 3) {
+            alert("Имя и комментарий должны быть не короче 3 символов");
+            return;
+        }
+
         addForm.style.display = "none";
         addingText.style.display = "block";
         addComment(name, comment)
@@ -52,10 +57,21 @@ export function setupAddComment(comments, commentsList, addButton, nameInput, co
                 nameInput.value = "";
                 commentInput.value = "";
             })
-            .catch((error) => alert(error.message))
+
+            .catch((error) => {
+                if (error.message === "Ошибка сервера") {
+                    handleAddClick();
+                } else if (error.message === "Ошибка валидации") {
+                    alert("Сервер сломался, попробуй позже");
+                } else {
+                    alert("Кажется, у вас сломался интернет, попробуйте позже");
+                }
+            })
             .finally(() => {
                 addForm.style.display = "";
                 addingText.style.display = "none";
             });
-    });
+    }
+
+    addButton.addEventListener("click", handleAddClick);
 }
