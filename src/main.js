@@ -28,9 +28,11 @@ function renderLoginPage() {
 //форма входа
 function renderAuthForm() {
     addForm.innerHTML = `
-        <input type="text" id="login-input" placeholder="Логин" />
-        <input type="password" id="password-input" placeholder="Пароль" />
-        <button id="login-button">Войти</button>
+        <input type="text" id="login-input" class="add-form-name" placeholder="Логин" />
+        <input type="password" id="password-input" class="add-form-text" placeholder="Пароль" />
+          <div class="add-form-row">
+        <button id="login-button" class="add-form-button">Войти</button>
+          </div>
         <p id="login-error" style="color:red; display:none;">Неверный логин или пароль</p>
     `;
     document.getElementById("login-button").addEventListener("click", function () {
@@ -53,11 +55,13 @@ function renderAuthForm() {
 //форма регистрации
 function renderRegisterForm() {
     addForm.innerHTML = `
-        <input type="text" id="reg-name" placeholder="Ваше имя" />
-        <input type="text" id="reg-login" placeholder="Логин" />
-        <input type="password" id="reg-password" placeholder="Пароль" />
-        <button id="reg-button">Зарегистрироваться</button>
-        <p><a href="#" id="back-to-login">Уже есть аккаунт? Войти</a></p>
+        <input type="text" id="reg-name" class="add-form-name" placeholder="Ваше имя" />
+        <input type="text" id="reg-login" class="add-form-name" placeholder="Логин" />
+        <input type="password" id="reg-password" class="add-form-text" placeholder="Пароль" />
+        <div class="add-form-row">
+        <button id="reg-button" class="add-form-button">Зарегистрироваться</button>
+        </div>
+        <p><a href="#" id="back-to-login" style="color:#bcec30;">Уже есть аккаунт? Войти</a></p>
         <p id="reg-error" style="color:red; display:none;"></p>
     `;
     document.getElementById("back-to-login").addEventListener("click", function (e) {
